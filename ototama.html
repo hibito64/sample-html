@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>おとたま - 音を浴びて、夜を整える。</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sawarabi+Mincho&family=Yuji+Syuku&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Simple Lightbox for Photo Gallery -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.css">
+
+    <style>
+        /* カスタムフォントをTailwindに適用 */
+        body {
+            font-family: 'Sawarabi Mincho', serif;
+            background-color: #121212; /* 少し明るい黒に */
+            color: #e0e0e0;
+        }
+        .font-logo {
+            font-family: 'Yuji Syuku', serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Sawarabi Mincho', serif;
+        }
+        /* スクロールバーのスタイル */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #d97706; /* Amber-600 */
+            border-radius: 4px;
+        }
+        
+        /* ヒーローセクションの動的な背景 */
+        .hero-bg {
+            background: linear-gradient(-45deg, #000000, #1a1101, #2f2002, #4d3302);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .text-shadow {
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        }
+
+        /* セクションの区切り線 */
+        .section-divider {
+            border-bottom: 1px solid #d97706; /* Amber-600 */
+            opacity: 0.3;
+            width: 100px;
+            margin: 0 auto 3rem auto;
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-300 antialiased">
+
+    <!-- Header -->
+    <header id="header" class="bg-black/70 backdrop-blur-md fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#top" class="font-logo text-4xl text-amber-500 hover:text-amber-400 transition-colors">おとたま</a>
+                <nav class="hidden md:flex space-x-6 text-lg items-center">
+                    <a href="#about" class="hover:text-amber-400 transition-colors">お店について</a>
+                    <a href="#menu" class="hover:text-amber-400 transition-colors">メニュー</a>
+                    <a href="#stage" class="hover:text-amber-400 transition-colors">ステージ</a>
+                    <a href="#event" class="hover:text-amber-400 transition-colors">イベント</a>
+                    <a href="#access" class="hover:text-amber-400 transition-colors">アクセス</a>
+                    <a href="#contact" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">お問い合わせ</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-3xl text-gray-300">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black/95">
+            <a href="#about" class="block py-3 px-6 text-center hover:bg-amber-600/20 transition-colors">お店について</a>
+            <a href="#menu" class="block py-3 px-6 text-center hover:bg-amber-600/20 transition-colors">メニュー</a>
+            <a href="#stage" class="block py-3 px-6 text-center hover:bg-amber-600/20 transition-colors">ステージ</a>
+            <a href="#event" class="block py-3 px-6 text-center hover:bg-amber-600/20 transition-colors">イベント</a>
+            <a href="#access" class="block py-3 px-6 text-center hover:bg-amber-600/20 transition-colors">アクセス</a>
+            <a href="#contact" class="block py-4 px-6 text-center bg-amber-600 hover:bg-amber-500 text-white font-bold transition-colors">お問い合わせ</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- 1. Top Page (Hero Section) -->
+        <section id="top" class="h-screen flex items-center justify-center hero-bg">
+            <div class="text-center text-white p-4">
+                <h1 class="text-4xl md:text-6xl font-semibold mb-4 text-shadow leading-tight">音を浴びて、夜を整える。</h1>
+                <p class="text-xl md:text-2xl mb-8 text-shadow">本気で遊ぶ。それが大人のスタンダードやで。</p>
+                <div class="bg-black/50 backdrop-blur-sm py-4 px-6 rounded-lg inline-block border border-amber-800">
+                    <p class="text-lg font-bold text-amber-300">【営業時間】 20:00 〜 1:00</p>
+                    <p class="text-md text-gray-300">（定休日：不定休）</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="container mx-auto px-6">
+
+            <!-- 2. About Section -->
+            <section id="about" class="py-24">
+                <h2 class="text-4xl font-logo text-amber-500 text-center mb-4">お店について</h2>
+                <div class="section-divider"></div>
+                <div class="max-w-4xl mx-auto bg-gray-900/40 p-8 rounded-xl shadow-2xl border border-gray-800">
+                    <div class="text-center mb-10">
+                        <p class="text-2xl leading-relaxed">「おとたま」は、<br>日々を駆け抜ける大人たちがふと立ち寄る、<br>“音”を肴にしたたまり場です。</p>
+                        <p class="mt-6 text-lg text-gray-400">舞台のようなステージと、隣の人と語らえるカウンター。<br>ひとりでも、誰かとでも。<br>自分の声が少し好きになれる、そんな夜を。</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8 text-center mt-12">
+                        <div class="bg-gray-800/70 p-6 rounded-lg transition-all duration-300 hover:bg-gray-800 hover:shadow-amber-900/50 shadow-lg">
+                            <h3 class="text-2xl font-bold text-amber-400 mb-3">店名の由来</h3>
+                            <p>「音」を楽しみ、「大人」がくつろげる「たまり場」。三つの想いを込めて「おとたま」と名付けました。</p>
+                        </div>
+                        <div class="bg-gray-800/70 p-6 rounded-lg transition-all duration-300 hover:bg-gray-800 hover:shadow-amber-900/50 shadow-lg">
+                            <h3 class="text-2xl font-bold text-amber-400 mb-3">初めての方へ</h3>
+                            <p>おひとり様大歓迎。ルールは最小限。良い歌声には、ぜひ温かい拍手をお願いします。</p>
+                        </div>
+                        <div class="bg-gray-800/70 p-6 rounded-lg transition-all duration-300 hover:bg-gray-800 hover:shadow-amber-900/50 shadow-lg">
+                            <h3 class="text-2xl font-bold text-amber-400 mb-3">空間設計</h3>
+                            <p>思いきり歌えるステージ、語らいが生まれるカウンター、ゆったり過ごせるソファ席をご用意しています。</p>
+                        </div>
+                         <div class="bg-gradient-to-br from-amber-800 via-amber-900 to-black p-6 rounded-lg shadow-lg border border-amber-700">
+                            <h3 class="text-2xl font-bold text-amber-300 mb-3">店主「ケースケ」って？</h3>
+                            <p class="text-gray-200">元・夜のトップ下。今は“音の司令塔”。「挑戦する奴、好きです。」が口癖。声の通りに悩んでる？心配すんな、音程も整えてくから。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Menu Section -->
+            <section id="menu" class="py-24">
+                <h2 class="text-4xl font-logo text-amber-500 text-center mb-4">お品書き</h2>
+                <div class="section-divider"></div>
+                <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+                    <div class="bg-gray-900/40 p-8 rounded-xl border border-gray-800 shadow-xl">
+                        <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b-2 border-amber-600 pb-2">飲み物</h3>
+                        <ul class="space-y-4 text-lg">
+                            <li class="flex justify-between"><span>生ビール（魂の一杯）</span> <span>¥700</span></li>
+                            <li class="flex justify-between"><span>焼酎（勝者の一滴）</span> <span>¥600~</span></li>
+                            <li class="flex justify-between"><span>自然派ワイン（風のテロワール）</span> <span>¥800</span></li>
+                            <li class="flex justify-between"><span>ウイスキー（ケイスケセレクション）</span> <span>¥700~</span></li>
+                            <li class="flex justify-between"><span>カクテル（ととのうブレンド）</span> <span>¥750</span></li>
+                            <li class="flex justify-between"><span>ノンアルビール（仮免ライダー）</span> <span>¥500</span></li>
+                            <li class="flex justify-between"><span>ソフトドリンク（歌前の静寂）</span> <span>¥400</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-900/40 p-8 rounded-xl border border-gray-800 shadow-xl">
+                        <h3 class="text-3xl font-bold text-amber-400 mb-6 border-b-2 border-amber-600 pb-2">おつまみ</h3>
+                         <ul class="space-y-4 text-lg">
+                            <li class="flex justify-between"><span>熱々！冷凍唐揚げ（ケースケの推し）</span> <span>¥600</span></li>
+                            <li class="flex justify-between"><span>山盛りポテト（口数より多め）</span> <span>¥550</span></li>
+                            <li class="flex justify-between"><span>ミックスナッツ（夜のおつまみドラフト）</span> <span>¥400</span></li>
+                            <li class="flex justify-between"><span>ピザ（パッションが溢れたやつ）</span> <span>¥1,000</span></li>
+                            <li class="flex justify-between"><span>〆のチャーハン（明日への一歩）</span> <span>¥800</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <p class="text-center mt-12 text-gray-400">※すべて税込価格です。ワンオーダー制をお願いしております。</p>
+            </section>
+            
+            <!-- 5. Stage Section -->
+            <section id="stage" class="py-24">
+                <h2 class="text-4xl font-logo text-amber-500 text-center mb-4">ステージ</h2>
+                <div class="section-divider"></div>
+                <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+                    <div class="bg-gray-900/40 p-8 rounded-xl border border-gray-800 shadow-xl">
+                        <p class="text-xl mb-2">ステージは“自分の声に出会う場所”。</p>
+                        <p class="text-gray-400 mb-6">上手いかどうかじゃない。出すか、出さないか。<br>整えてくから、出していこうや。</p>
+                        <h3 class="text-2xl text-amber-400 font-bold mb-4">気軽に、思いきり。</h3>
+                        <ul class="list-disc list-inside space-y-3">
+                            <li>1曲100円のリクエスト制</li>
+                            <li>音響機材: DAM / JOYSOUND</li>
+                            <li>マイク×2本、簡易照明あり</li>
+                            <li>動画撮影やSNSでのライブ配信もOK！<br><span class="text-sm text-gray-400">（他のお客様の映り込みにご配慮ください）</span></li>
+                        </ul>
+                    </div>
+                    <div>
+                                           </div>
+                </div>
+            </section>
+            
+            <!-- 7. Photo Gallery -->
+            <section id="photo" class="py-24">
+                <h2 class="text-4xl font-logo text-amber-500 text-center mb-4">フォトギャラリー</h2>
+                <div class="section-divider"></div>
+                <div class="photo-gallery grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                                   </div>
+            </section>
+
+            <!-- 6. Event Section -->
+            <section id="event" class="py-24">
+                <h2 class="text-4xl font-logo text-amber-500 text-center mb-4">イベント</h2>
+                <div class="section-divider"></div>
+                <div class="max-w-6xl mx-auto grid lg:grid-cols-5 gap-10">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-gray-900/40 p-6 rounded-xl border border-gray-800 shadow-xl">
+                            <h4 class="text-xl font-bold text-amber-400">週1オープンマイクナイト</h4>
+                            <p class="text-gray-400 text-sm mb-2">毎週水曜 21:00〜</p>
+                            <p>楽器持ち込みOK！誰でも参加できるセッションナイトです。</p>
+                        </div>
+                        <div class="bg-gray-900/40 p-6 rounded-xl border border-gray-800 shadow-xl">
+                            <h4 class="text-xl font-bold text-amber-400">地元ミュージシャンLive</h4>
+                            <p class="text-gray-400 text-sm mb-2">詳細はカレンダーにて</p>
+                            <p>船橋ゆかりのアーティストによる、熱いライブをお届けします。</p>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 h-full bg-gray-900/40 p-6 rounded-xl border border-gray-800 shadow-xl">
+                        <h3 class="text-2xl text-amber-400 font-bold mb-4 text-center">イベントカレンダー</h3>
+                        <div class="aspect-w-4 aspect-h-3">
+                           <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23121212&ctz=Asia%2FTokyo&showTitle=0&showNav=1&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=amEuamFwYW5lc2UjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23D97706" style="border:solid 1px #4b5563" width="100%" height="100%" frameborder="0" scrolling="no"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Access & Contact Section -->
+            <section id="access" class="py-24">
+                 <div class="grid md:grid-cols-5 gap-10 items-start">
+                    <div class="md:col-span-2 bg-gray-900/40 p-8 rounded-xl border border-gray-800 shadow-xl">
+                        <h2 class="text-3xl font-logo text-amber-500 mb-6">店舗情報</h2>
+                        <h3 class="text-2xl font-bold mb-4">おとたま</h3>
+                        <p class="mb-2"><i class="fas fa-map-marker-alt w-6 text-center mr-2 text-amber-400"></i>〒273-0042<br><span class="ml-8">千葉県船橋市前貝塚町565-11 塚田プラザ</span></p>
+                        <p class="mb-4"><i class="fas fa-train w-6 text-center mr-2 text-amber-400"></i>東武アーバンパークライン「塚田駅」西口より徒歩1分</p>
+                        <p class="text-gray-400 text-sm"><i class="fas fa-parking w-6 text-center mr-2 text-amber-400"></i>専用駐車場はございません。お近くのコインパーキングをご利用ください。</p>
+                    </div>
+                    <div class="md:col-span-3 w-full h-96 rounded-lg overflow-hidden shadow-2xl">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3238.258688461979!2d139.9921946152605!3d35.7445722801798!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x601880f0749e7a2b%3A0xea8c7a6598c1b333!2z44CSMjc0LTAwNDIg5Y2D6JGJ55yM6Ii55qmL5biC5YmN6LK75aGa55S6NTY1LTEx!5e0!3m2!1sja!2sjp!4v1684841976686!5m2!1sja!2sjp" 
+                            width="100%" 
+                            height="100%" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                 </div>
+            </section>
+             <section id="contact" class="pb-24">
+                <div class="max-w-3xl mx-auto text-center bg-gray-900/40 p-8 rounded-xl border border-gray-800 shadow-xl">
+                    <h2 class="text-3xl font-logo text-amber-500 mb-6">お問い合わせ</h2>
+                    <p class="mb-8 text-gray-400">ご予約、イベント利用のご相談など、お気軽にご連絡ください。</p>
+                    <form action="#" method="POST" class="space-y-6 text-left">
+                        <div>
+                            <label for="name" class="block mb-2 text-sm font-medium text-gray-400">お名前</label>
+                            <input type="text" id="name" class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition" required>
+                        </div>
+                        <div>
+                            <label for="email" class="block mb-2 text-sm font-medium text-gray-400">メールアドレス</label>
+                            <input type="email" id="email" class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition" required>
+                        </div>
+                        <div>
+                            <label for="message" class="block mb-2 text-sm font-medium text-gray-400">お問い合わせ内容</label>
+                            <textarea id="message" rows="6" class="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition" required></textarea>
+                        </div>
+                        <div class="text-center pt-4">
+                            <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-12 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg">送信する</button>
+                        </div>
+                    </form>
+                    <div class="mt-12">
+                        <p class="mb-4">SNSでも最新情報を発信中！</p>
+                        <div class="flex justify-center space-x-6">
+                            <a href="#" class="text-4xl text-gray-400 hover:text-amber-400 transition-all duration-300 transform hover:scale-110"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-4xl text-gray-400 hover:text-amber-400 transition-all duration-300 transform hover:scale-110"><i class="fab fa-twitter"></i></a>
+                            <a href="#" class="text-4xl text-gray-400 hover:text-amber-400 transition-all duration-300 transform hover:scale-110"><i class="fab fa-line"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <a href="#top" class="font-logo text-3xl text-amber-500 hover:text-amber-400 transition-colors">おとたま</a>
+            <p class="mt-4">&copy; 2024 Ototama. All Rights Reserved.</p>
+            <p class="mt-2 text-sm">音痴でも大歓迎。勇気があれば、それでよし。</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.14.2/simple-lightbox.min.js"></script>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        const mobileMenuLinks = mobileMenu.getElementsByTagName('a');
+        for (let link of mobileMenuLinks) {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        }
+        
+        // Header shadow on scroll
+        const header = document.getElementById('header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('shadow-lg', 'shadow-amber-900/50');
+            } else {
+                header.classList.remove('shadow-lg', 'shadow-amber-900/50');
+            }
+        });
+
+        // Initialize Simple Lightbox
+        document.addEventListener("DOMContentLoaded", function () {
+            new SimpleLightbox('.photo-gallery a', {
+                /* optional options */
+                overlayOpacity: 0.9,
+                animationSpeed: 250,
+            });
+        });
+    </script>
+</body>
+</html>
