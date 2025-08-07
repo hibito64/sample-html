@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ぽんちゃんの絵本</title>
+    <title>ぽんちゃんの絵本 (SVG版)</title>
     <!-- Tailwind CSSを読み込みます -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #e2e8f0; /* スレートグレーの背景色 */
+            background-color: #fce7f3; /* 薄いピンクの背景色 */
         }
         .storybook-container {
             width: 95%;
@@ -20,7 +20,7 @@
             margin: auto;
             border-radius: 1.5rem; /* 角を丸く */
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            background-color: #f8fafc; /* 白に近い背景色 */
+            background-color: #fdf2f8; /* 白に近いピンク */
             position: relative;
             overflow: hidden;
         }
@@ -34,9 +34,7 @@
             padding: 1.5rem;
             text-align: center;
             transition: opacity 0.5s ease-in-out;
-            font-size: 1.25rem;
-            line-height: 1.75rem;
-            color: #1f2937; /* 濃いグレーの文字色 */
+            color: #4a5568; /* 濃いグレーの文字色 */
         }
         .story-page.hidden {
             display: none;
@@ -46,14 +44,6 @@
             font-size: 1.5rem;
             line-height: 2rem;
             font-weight: 600;
-        }
-        .page-image {
-            width: 90%;
-            max-width: 400px;
-            height: auto;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            object-fit: cover;
         }
         .controls {
             position: absolute;
@@ -65,17 +55,18 @@
             z-index: 10;
         }
         .control-btn {
-            background-color: #f87171; /* 赤系のボタン色 */
+            background-color: #fda4af; /* 赤系のボタン色 */
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 9999px; /* 丸いボタン */
             font-size: 1rem;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(248, 113, 129, 0.4);
+            box-shadow: 0 4px 6px rgba(253, 164, 175, 0.4);
             transition: all 0.2s;
+            cursor: pointer;
         }
         .control-btn:hover:enabled {
-            background-color: #ef4444; /* ホバー時の色 */
+            background-color: #f43f5e; /* ホバー時の色 */
             transform: translateY(-2px);
         }
         .control-btn:disabled {
@@ -93,44 +84,107 @@
 
         <!-- 各ページ -->
         <div class="story-page" id="page-1">
-            <img class="page-image" src="https://placehold.co/400x300/e9d5ff/7c3aed?text=ふわふわのぽんちゃん" alt="太陽の光を浴びて気持ちよさそうに眠っているぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M190,180 C200,190 210,190 220,180" fill="#4a5568" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ふわふわのぽんちゃん</text>
+            </svg>
             <p class="page-text">ふわふわ、ふわふわ。</p>
             <p class="page-text">ぽんちゃんは、おひさまの光を浴びて、気持ちよさそうにねんね。<br/>「すー、すー。」</p>
         </div>
 
         <div class="story-page hidden" id="page-2">
-            <img class="page-image" src="https://placehold.co/400x300/bfdbfe/1d4ed8?text=おはよう！" alt="目を覚ましたぽんちゃんが、しっぽを振っているイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">おはよう！</text>
+            </svg>
             <p class="page-text">「おはよう、ぽんちゃん！」</p>
             <p class="page-text">ぽんちゃん、むくむく。<br/>「うーん、おはよう！」</p>
             <p class="page-text">ふわふわのしっぽが、ふりふり、ふりふり。<br/>「うれしいな！」</p>
         </div>
 
         <div class="story-page hidden" id="page-3">
-            <img class="page-image" src="https://placehold.co/400x300/d1fae5/065f46?text=くんくん、くんくん" alt="お庭でお花の匂いを嗅いでいるぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <path d="M200,200 C180,220 220,220 200,200" fill="#fbcfe8" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <path d="M150,150 Q160,140 170,150" fill="none" stroke="#4a5568" stroke-width="2" />
+                <path d="M230,150 Q240,140 250,150" fill="none" stroke="#4a5568" stroke-width="2" />
+                <path d="M200,180 A10,10 0 0,0 210,190" fill="none" stroke="#4a5568" stroke-width="2" />
+                <path d="M190,180 A10,10 0 0,1 200,190" fill="none" stroke="#4a5568" stroke-width="2" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">くんくん、くんくん</text>
+            </svg>
             <p class="page-text">お庭をくんくん、くんくん。<br/>「いいにおい！」</p>
             <p class="page-text">お花もくんくん、くんくん。<br/>「きれいだね！」</p>
         </div>
-
+        
         <div class="story-page hidden" id="page-4">
-            <img class="page-image" src="https://placehold.co/400x300/fecaca/991b1b?text=ぺちゃぺちゃ、ぺちゃぺちゃ" alt="お水をぺちゃぺちゃ飲んでいるぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ぺちゃぺちゃ、ぺちゃぺちゃ</text>
+            </svg>
             <p class="page-text">お水をぺちゃぺちゃ、ぺちゃぺちゃ。<br/>「おいしいな！」</p>
             <p class="page-text">お水を飲むと、おひげがぬれちゃった。</p>
         </div>
 
         <div class="story-page hidden" id="page-5">
-            <img class="page-image" src="https://placehold.co/400x300/a5b4fc/4338ca?text=ころころ、ころころ" alt="ボールと楽しそうに追いかけっこしているぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <circle cx="150" cy="200" r="20" fill="#e11d48" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ころころ、ころころ</text>
+            </svg>
             <p class="page-text">だいすきなボール、ころころ、ころころ。<br/>ぽんちゃん、とてててて！</p>
             <p class="page-text">「まてまてー！」<br/>ボールとおいかけっこ。楽しいね。</p>
         </div>
-
+        
         <div class="story-page hidden" id="page-6">
-            <img class="page-image" src="https://placehold.co/400x300/c7d2fe/6366f1?text=すりすり、すりすり" alt="パパやママの足にすり寄っているぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">すりすり、すりすり</text>
+            </svg>
             <p class="page-text">パパやママの足に、すりすり、すりすり。<br/>「だーいすき！」</p>
             <p class="page-text">ぎゅーってされると、ぽんちゃんはうれしいね。</p>
         </div>
 
         <div class="story-page hidden" id="page-7">
-            <img class="page-image" src="https://placehold.co/400x300/e9d5ff/7c3aed?text=おやすみ、ぽんちゃん" alt="一日遊び疲れて眠っているぽんちゃんのイラスト">
+            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
+                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
+                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
+                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
+                <circle cx="180" cy="120" r="8" fill="#4a5568" />
+                <circle cx="220" cy="120" r="8" fill="#4a5568" />
+                <path d="M190,180 C200,190 210,190 220,180" fill="#4a5568" />
+                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">おやすみ、ぽんちゃん</text>
+            </svg>
             <p class="page-text">今日もいっぱい遊んで、ぽんちゃんは、またねんね。<br/>「すー、すー。」</p>
             <p class="page-text">ふわふわ、ふわふわ。</p>
             <p class="page-text">おやすみ、ぽんちゃん。</p>
