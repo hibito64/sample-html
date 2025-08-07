@@ -3,240 +3,638 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ぽんちゃんの絵本 (SVG版)</title>
-    <!-- Tailwind CSSを読み込みます -->
+    <title>インタラクティブ絵本「ぽんちゃんと いっしょ」</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: A linear, full-screen digital storybook format. Users navigate page by page using simple 'next' and 'previous' buttons. This structure is intuitive for a book format and minimizes distractions for a young child. Each page features a simple CSS-based illustration of the character 'Pon-chan' and interactive elements (animations and sounds via Tone.js) that are directly related to the on-page text and onomatopoeia, enhancing engagement for the parent and child. Gemini API features (TTS and story generation) are added to enhance interactivity and replayability. -->
+    <!-- Visualization & Content Choices: The character 'Pon-chan' and scene elements are created using styled HTML divs, avoiding SVG/image files to keep the application self-contained. Goal: Engagement/Storytelling. Method: Each page from the source report is a 'scene'. Interaction: Clicking on Pon-chan or related elements triggers sounds (eating, sleeping) or animations (tail wagging, playing) that correspond to the story's onomatopoeia. Gemini TTS provides audio read-aloud on each page. Gemini text generation creates new story pages on demand. Justification: This approach turns passive reading into an active, multi-sensory experience, which is more effective for engaging a 7-month-old child. Library: Tone.js for web audio, Gemini API for TTS and text. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fce7f3; /* 薄いピンクの背景色 */
+            font-family: 'Mochiy Pop One', sans-serif;
+            touch-action: manipulation;
         }
-        .storybook-container {
-            width: 95%;
-            max-width: 600px;
-            height: 90vh;
-            max-height: 800px;
-            margin: auto;
-            border-radius: 1.5rem; /* 角を丸く */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            background-color: #fdf2f8; /* 白に近いピンク */
-            position: relative;
-            overflow: hidden;
-        }
-        .story-page {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-            text-align: center;
-            transition: opacity 0.5s ease-in-out;
-            color: #4a5568; /* 濃いグレーの文字色 */
-        }
-        .story-page.hidden {
+        .page {
             display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
-        .page-text {
-            margin-top: 1rem;
-            font-size: 1.5rem;
-            line-height: 2rem;
-            font-weight: 600;
-        }
-        .controls {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
+        .page.active {
             display: flex;
-            gap: 1rem;
-            z-index: 10;
+            opacity: 1;
         }
-        .control-btn {
-            background-color: #fda4af; /* 赤系のボタン色 */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px; /* 丸いボタン */
-            font-size: 1rem;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(253, 164, 175, 0.4);
-            transition: all 0.2s;
+        .ponchan {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .ponchan-body {
+            position: absolute;
+            width: 100px;
+            height: 90px;
+            background-color: #D2B48C; /* tan */
+            border-radius: 50% 50% 40% 40%;
+            top: 50px;
+            left: 25px;
+            box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1);
+        }
+        .ponchan-head {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: #D2B48C; /* tan */
+            border-radius: 50%;
+            top: 0;
+            left: 35px;
+        }
+        .ponchan-ear {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            background-color: #A0522D; /* sienna */
+            border-radius: 50%;
+            top: 20px;
+        }
+        .ear-left { left: 20px; transform: rotate(-20deg); }
+        .ear-right { right: 20px; transform: rotate(20deg); }
+        .ponchan-face .eye {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            top: 35px;
+        }
+        .ponchan-face .eye.left { left: 20px; }
+        .ponchan-face .eye.right { right: 20px; }
+        .ponchan-face .nose {
+            position: absolute;
+            width: 15px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            top: 50px;
+            left: 32.5px;
+        }
+        .ponchan-tail {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            background-color: #A0522D;
+            border-radius: 50%;
+            top: 40px;
+            left: 10px;
+            transform-origin: bottom center;
+        }
+        @keyframes wag-tail {
+            0%, 100% { transform: rotate(-20deg); }
+            50% { transform: rotate(20deg); }
+        }
+        .wagging { animation: wag-tail 0.5s infinite ease-in-out; }
+        .ball {
+            width: 40px;
+            height: 40px;
+            background-color: #F08080; /* lightcoral */
+            border-radius: 50%;
             cursor: pointer;
         }
-        .control-btn:hover:enabled {
-            background-color: #f43f5e; /* ホバー時の色 */
-            transform: translateY(-2px);
+        @keyframes roll-ball {
+            from { transform: translateX(0) rotate(0deg); }
+            to { transform: translateX(100px) rotate(360deg); }
         }
-        .control-btn:disabled {
-            background-color: #e5e7eb; /* 無効時の色 */
+        .rolling { animation: roll-ball 1s linear; }
+        @keyframes walk {
+            0% { transform: translateX(-100px) rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: translateX(0) rotate(0deg); }
+        }
+        .walking { animation: walk 1.5s ease-in-out forwards; }
+        .ponchan-sleep { transform: rotate(90deg); }
+        .ponchan-sleep .ponchan-head { top: 30px; left: 60px; }
+        .zzz {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: float-up 2s infinite ease-in;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        .zzz1 { top: -20px; left: 100px; animation-delay: 0s; }
+        .zzz2 { top: -30px; left: 120px; animation-delay: 0.5s; }
+        .heart {
+            position: absolute;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: float-up 1.5s ease-out forwards;
+        }
+        .baby {
+            width: 100px;
+            height: 100px;
+            background-color: #FFDEAD; /* navajowhite */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-left: 20px;
+        }
+        .baby-eye { width: 8px; height: 8px; background: #333; border-radius: 50%; margin: 2px; }
+        .baby-smile { width: 20px; height: 10px; border-bottom: 2px solid #333; border-radius: 0 0 10px 10px; }
+        
+        .gemini-btn {
+            background-color: #ffedd5;
+            color: #9a3412;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid #fdba74;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .gemini-btn:hover {
+            background-color: #fed7aa;
+        }
+        .gemini-btn:disabled {
+            background-color: #f3f4f6;
             color: #9ca3af;
             cursor: not-allowed;
-            box-shadow: none;
+            border-color: #d1d5db;
+        }
+        .loader {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="bg-[#FDF6E3] text-[#58452d] overflow-hidden">
 
-    <!-- ストーリーブックのコンテナ -->
-    <div class="storybook-container flex flex-col items-center justify-center relative">
+    <main id="storybook-container" class="w-screen h-screen relative">
+        <!-- Pages will be injected here by JavaScript -->
+    </main>
 
-        <!-- 各ページ -->
-        <div class="story-page" id="page-1">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M190,180 C200,190 210,190 220,180" fill="#4a5568" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ふわふわのぽんちゃん</text>
-            </svg>
-            <p class="page-text">ふわふわ、ふわふわ。</p>
-            <p class="page-text">ぽんちゃんは、おひさまの光を浴びて、気持ちよさそうにねんね。<br/>「すー、すー。」</p>
-        </div>
-
-        <div class="story-page hidden" id="page-2">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">おはよう！</text>
-            </svg>
-            <p class="page-text">「おはよう、ぽんちゃん！」</p>
-            <p class="page-text">ぽんちゃん、むくむく。<br/>「うーん、おはよう！」</p>
-            <p class="page-text">ふわふわのしっぽが、ふりふり、ふりふり。<br/>「うれしいな！」</p>
-        </div>
-
-        <div class="story-page hidden" id="page-3">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <path d="M200,200 C180,220 220,220 200,200" fill="#fbcfe8" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <path d="M150,150 Q160,140 170,150" fill="none" stroke="#4a5568" stroke-width="2" />
-                <path d="M230,150 Q240,140 250,150" fill="none" stroke="#4a5568" stroke-width="2" />
-                <path d="M200,180 A10,10 0 0,0 210,190" fill="none" stroke="#4a5568" stroke-width="2" />
-                <path d="M190,180 A10,10 0 0,1 200,190" fill="none" stroke="#4a5568" stroke-width="2" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">くんくん、くんくん</text>
-            </svg>
-            <p class="page-text">お庭をくんくん、くんくん。<br/>「いいにおい！」</p>
-            <p class="page-text">お花もくんくん、くんくん。<br/>「きれいだね！」</p>
-        </div>
-        
-        <div class="story-page hidden" id="page-4">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ぺちゃぺちゃ、ぺちゃぺちゃ</text>
-            </svg>
-            <p class="page-text">お水をぺちゃぺちゃ、ぺちゃぺちゃ。<br/>「おいしいな！」</p>
-            <p class="page-text">お水を飲むと、おひげがぬれちゃった。</p>
-        </div>
-
-        <div class="story-page hidden" id="page-5">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <circle cx="150" cy="200" r="20" fill="#e11d48" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">ころころ、ころころ</text>
-            </svg>
-            <p class="page-text">だいすきなボール、ころころ、ころころ。<br/>ぽんちゃん、とてててて！</p>
-            <p class="page-text">「まてまてー！」<br/>ボールとおいかけっこ。楽しいね。</p>
-        </div>
-        
-        <div class="story-page hidden" id="page-6">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M180,190 Q200,210 220,190" fill="none" stroke="#4a5568" stroke-width="3" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">すりすり、すりすり</text>
-            </svg>
-            <p class="page-text">パパやママの足に、すりすり、すりすり。<br/>「だーいすき！」</p>
-            <p class="page-text">ぎゅーってされると、ぽんちゃんはうれしいね。</p>
-        </div>
-
-        <div class="story-page hidden" id="page-7">
-            <svg class="w-2/3 h-auto" viewBox="0 0 400 300">
-                <rect width="100%" height="100%" fill="#fff1f2" rx="16" />
-                <path d="M200,50 A100,80 0 1,0 200,250 A100,80 0 1,0 200,50" fill="#fbcfe8" />
-                <path d="M180,100 C150,150 250,150 220,100" fill="#fff" />
-                <circle cx="180" cy="120" r="8" fill="#4a5568" />
-                <circle cx="220" cy="120" r="8" fill="#4a5568" />
-                <path d="M190,180 C200,190 210,190 220,180" fill="#4a5568" />
-                <text x="200" y="250" text-anchor="middle" font-size="20" fill="#e11d48">おやすみ、ぽんちゃん</text>
-            </svg>
-            <p class="page-text">今日もいっぱい遊んで、ぽんちゃんは、またねんね。<br/>「すー、すー。」</p>
-            <p class="page-text">ふわふわ、ふわふわ。</p>
-            <p class="page-text">おやすみ、ぽんちゃん。</p>
-        </div>
-
-        <!-- ページ操作ボタン -->
-        <div class="controls">
-            <button id="prevBtn" class="control-btn">前へ</button>
-            <button id="nextBtn" class="control-btn">次へ</button>
-        </div>
-
+    <div class="absolute bottom-5 left-0 right-0 flex justify-center space-x-8 z-10">
+        <button id="prev-btn" class="text-4xl bg-[#FFF9E9] rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95">◀</button>
+        <button id="next-btn" class="text-4xl bg-[#FFF9E9] rounded-full w-16 h-16 flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95">▶</button>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const pages = document.querySelectorAll('.story-page');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            let currentPageIndex = 0;
+        const story = [
+            {
+                text: "ぽんちゃん。<br>ふわふわ ぽんちゃん。",
+                scene: () => `
+                    <div id="ponchan" class="ponchan">
+                        <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                        <div class="ponchan-ear ear-left"></div>
+                        <div class="ponchan-ear ear-right"></div>
+                        <div class="ponchan-body"></div>
+                    </div>`,
+                interaction: () => {
+                    const ponchan = document.getElementById('ponchan');
+                    ponchan.addEventListener('click', () => {
+                        const synth = new Tone.Synth().toDestination();
+                        synth.triggerAttackRelease("C4", "8n");
+                        ponchan.style.transform = 'scale(1.1)';
+                        setTimeout(() => ponchan.style.transform = 'scale(1)', 200);
+                    });
+                }
+            },
+            {
+                text: "ぽんちゃんが しっぽを<br>ふりふり ふりふり。",
+                scene: () => `
+                    <div id="ponchan" class="ponchan">
+                        <div class="ponchan-head" style="left: 15px;"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                        <div class="ponchan-ear ear-left" style="left: 0;"></div>
+                        <div class="ponchan-ear ear-right" style="right: 35px;"></div>
+                        <div class="ponchan-body"></div>
+                        <div class="ponchan-tail wagging"></div>
+                    </div>`,
+                interaction: () => {
+                    const ponchan = document.getElementById('ponchan');
+                     ponchan.addEventListener('click', () => {
+                        const synth = new Tone.Synth({ oscillator: { type: "sine" }, envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 } }).toDestination();
+                        synth.triggerAttackRelease("G4", "16n", Tone.now());
+                        synth.triggerAttackRelease("A4", "16n", Tone.now() + 0.1);
+                    });
+                }
+            },
+            {
+                text: "ごはんを たべるよ。<br>かりかり かりかり。",
+                scene: () => `
+                    <div class="flex items-end space-x-4">
+                        <div id="ponchan" class="ponchan">
+                            <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                            <div class="ponchan-ear ear-left"></div>
+                            <div class="ponchan-ear ear-right"></div>
+                            <div class="ponchan-body"></div>
+                        </div>
+                        <div id="food-bowl" class="w-20 h-10 bg-sky-300 rounded-t-full cursor-pointer flex items-center justify-center pt-2">
+                           <div class="w-4 h-4 bg-yellow-900 rounded-full"></div>
+                           <div class="w-3 h-3 bg-yellow-800 rounded-full -ml-1"></div>
+                        </div>
+                    </div>`,
+                interaction: () => {
+                    const foodBowl = document.getElementById('food-bowl');
+                    foodBowl.addEventListener('click', () => {
+                        const noise = new Tone.Noise("white").start();
+                        const filter = new Tone.AutoFilter({
+                            frequency: "8n",
+                            baseFrequency: 400,
+                            octaves: 2
+                        }).toDestination();
+                        noise.connect(filter);
+                        setTimeout(() => noise.stop(), 300);
+                    });
+                }
+            },
+            {
+                text: "ボールが ころころ。<br>ぽんちゃんも ころころ。",
+                scene: () => `
+                    <div class="flex items-center space-x-8">
+                        <div id="ponchan" class="ponchan">
+                            <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                            <div class="ponchan-ear ear-left"></div>
+                            <div class="ponchan-ear ear-right"></div>
+                            <div class="ponchan-body"></div>
+                        </div>
+                        <div id="ball" class="ball"></div>
+                    </div>`,
+                interaction: () => {
+                    const ball = document.getElementById('ball');
+                    ball.addEventListener('click', () => {
+                        if (!ball.classList.contains('rolling')) {
+                            ball.classList.add('rolling');
+                            const synth = new Tone.Player("https://tonejs.github.io/audio/berklee/guitar_chord_A.mp3").toDestination();
+                            Tone.loaded().then(() => synth.start());
+                            setTimeout(() => ball.classList.remove('rolling'), 1000);
+                        }
+                    });
+                }
+            },
+            {
+                text: "ぽんちゃんが やってきた。<br>とことこ とことこ。",
+                scene: () => `
+                    <div id="ponchan" class="ponchan walking">
+                        <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                        <div class="ponchan-ear ear-left"></div>
+                        <div class="ponchan-ear ear-right"></div>
+                        <div class="ponchan-body"></div>
+                    </div>`,
+                interaction: () => {
+                     const ponchan = document.getElementById('ponchan');
+                     ponchan.addEventListener('click', () => {
+                        const synth = new Tone.MembraneSynth().toDestination();
+                        synth.triggerAttackRelease("C2", "8n", Tone.now());
+                        synth.triggerAttackRelease("C2", "8n", Tone.now() + 0.3);
+                    });
+                }
+            },
+            {
+                text: "いいこ いいこ。<br>うれしいね、ぽんちゃん。",
+                scene: () => `
+                    <div id="ponchan" class="ponchan relative">
+                        <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                        <div class="ponchan-ear ear-left"></div>
+                        <div class="ponchan-ear ear-right"></div>
+                        <div class="ponchan-body"></div>
+                        <div id="hearts-container" class="absolute inset-0"></div>
+                    </div>`,
+                interaction: () => {
+                    const ponchan = document.getElementById('ponchan');
+                    const heartsContainer = document.getElementById('hearts-container');
+                    ponchan.addEventListener('click', () => {
+                        const synth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
+                        synth.triggerAttackRelease('C5', '8n');
+                        for (let i = 0; i < 3; i++) {
+                            const heart = document.createElement('div');
+                            heart.className = 'heart';
+                            heart.innerHTML = '❤️';
+                            heart.style.left = `${Math.random() * 80 + 10}%`;
+                            heart.style.animationDelay = `${Math.random() * 0.3}s`;
+                            heartsContainer.appendChild(heart);
+                            setTimeout(() => heart.remove(), 1500);
+                        }
+                    });
+                }
+            },
+            {
+                text: "ぽんちゃん ねんね。<br>すやすや すやすや。",
+                scene: () => `
+                    <div id="ponchan" class="ponchan ponchan-sleep">
+                        <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                        <div class="ponchan-ear ear-left"></div>
+                        <div class="ponchan-ear ear-right"></div>
+                        <div class="ponchan-body"></div>
+                        <div class="zzz zzz1">z</div>
+                        <div class="zzz zzz2">z</div>
+                    </div>`,
+                interaction: () => {
+                    const ponchan = document.getElementById('ponchan');
+                    ponchan.addEventListener('click', () => {
+                        const noise = new Tone.Noise("pink").start();
+                        const filter = new Tone.AutoFilter({
+                            frequency: "4n",
+                            baseFrequency: 200,
+                            octaves: 1
+                        }).toDestination();
+                        noise.connect(filter);
+                        setTimeout(() => noise.stop(), 1000);
+                    });
+                }
+            },
+            {
+                text: "ぽんちゃんと いっしょ。<br>ずーっと いっしょ。<br>だいすきだよ。",
+                scene: () => `
+                    <div class="flex items-center">
+                        <div id="ponchan" class="ponchan">
+                            <div class="ponchan-head"><div class="ponchan-face"><div class="eye left"></div><div class="eye right"></div><div class="nose"></div></div></div>
+                            <div class="ponchan-ear ear-left"></div>
+                            <div class="ponchan-ear ear-right"></div>
+                            <div class="ponchan-body"></div>
+                        </div>
+                        <div class="baby">
+                            <div class="flex">
+                                <div class="baby-eye"></div><div class="baby-eye"></div>
+                            </div>
+                            <div class="baby-smile"></div>
+                        </div>
+                    </div>`,
+                interaction: () => {}
+            }
+        ];
 
-            // ページを表示する関数
-            function showPage(index) {
-                // すべてのページを非表示にする
-                pages.forEach((page) => page.classList.add('hidden'));
-                // 指定されたページのみを表示
-                pages[index].classList.remove('hidden');
+        let currentPageIndex = 0;
+        let isApiBusy = false;
+        const container = document.getElementById('storybook-container');
+        const nextBtn = document.getElementById('next-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        
+        // --- Gemini API Functions ---
 
-                // ボタンの有効・無効を切り替える
-                prevBtn.disabled = index === 0;
-                nextBtn.disabled = index === pages.length - 1;
+        const API_KEY = ""; // Provided by environment
+
+        async function callGeminiApi(apiUrl, payload, maxRetries = 3) {
+            isApiBusy = true;
+            updateNavButtons();
+            let attempt = 0;
+            while (attempt < maxRetries) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API call failed on attempt ${attempt + 1}:`, error);
+                    attempt++;
+                    if (attempt >= maxRetries) {
+                        isApiBusy = false;
+                        updateNavButtons();
+                        return null;
+                    }
+                    const delay = Math.pow(2, attempt) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+        async function generateNewStory(button) {
+            button.disabled = true;
+            button.innerHTML = '<span class="loader"></span>考え中...';
+
+            const prompt = "あなたは子供向けの絵本作家です。トイプードルの「ぽんちゃん」の新しいお話を1ページ作ってください。対象は7ヶ月の赤ちゃんです。簡単で短い言葉と、楽しいオノマトペ（擬音語・擬態語）を使ってください。例：「ぽんちゃんが お水を ごくごく。」「ぽんちゃんが お庭を てくてく。」。文章は20文字以内でお願いします。";
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+            
+            const result = await callGeminiApi(apiUrl, payload);
+
+            if (result && result.candidates && result.candidates[0].content.parts[0].text) {
+                const newText = result.candidates[0].content.parts[0].text.replace(/「/g, '').replace(/」/g, '').replace(/\n/g, '<br>');
+                const newPage = {
+                    text: newText,
+                    scene: () => story[0].scene(), // Use the first page's scene as a template
+                    interaction: story[0].interaction,
+                    isGenerated: true
+                };
+                story.push(newPage);
+                currentPageIndex = story.length - 1;
+                renderPage(currentPageIndex);
+            } else {
+                alert("新しいお話の作成に失敗しました。もう一度試してください。");
+                button.disabled = false;
+                button.innerHTML = '✨ ぽんちゃんの新しいお話を作る';
+            }
+            isApiBusy = false;
+            updateNavButtons();
+        }
+
+        async function readAloud(text, button) {
+            button.disabled = true;
+            button.innerHTML = '...';
+
+            const prompt = `Say in a gentle, warm, and slightly playful voice for a baby: ${text.replace(/<br>/g, ' ')}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: { prebuiltVoiceConfig: { voiceName: "Laomedeia" } }
+                    }
+                },
+                model: "gemini-2.5-flash-preview-tts"
+            };
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${API_KEY}`;
+            
+            const result = await callGeminiApi(apiUrl, payload);
+
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                try {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    if (!sampleRateMatch) throw new Error("Sample rate not found in mimeType");
+                    const sampleRate = parseInt(sampleRateMatch[1], 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                    audio.onended = () => {
+                        button.disabled = false;
+                        button.innerHTML = '🔊';
+                    };
+                } catch (e) {
+                    console.error("Audio processing failed:", e);
+                    button.disabled = false;
+                    button.innerHTML = '🔊';
+                }
+            } else {
+                console.error("TTS failed, no audio data received.");
+                button.disabled = false;
+                button.innerHTML = '🔊';
+            }
+            isApiBusy = false;
+            updateNavButtons();
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1;
+            const bitsPerSample = 16;
+            const blockAlign = (numChannels * bitsPerSample) / 8;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcmData.length * (bitsPerSample / 8);
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            function writeString(view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
             }
 
-            // 「次へ」ボタンのイベントリスナー
-            nextBtn.addEventListener('click', () => {
-                if (currentPageIndex < pages.length - 1) {
-                    currentPageIndex++;
-                    showPage(currentPageIndex);
-                }
-            });
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, bitsPerSample, true);
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
 
-            // 「前へ」ボタンのイベントリスナー
-            prevBtn.addEventListener('click', () => {
-                if (currentPageIndex > 0) {
-                    currentPageIndex--;
-                    showPage(currentPageIndex);
-                }
-            });
+            // Write PCM data
+            let offset = 44;
+            for (let i = 0; i < pcmData.length; i++, offset += 2) {
+                view.setInt16(offset, pcmData[i], true);
+            }
 
-            // 最初のページを表示
-            showPage(currentPageIndex);
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+
+        // --- Storybook Logic ---
+
+        function renderPage(index) {
+            container.innerHTML = '';
+            const pageData = story[index];
+            
+            const pageElement = document.createElement('div');
+            pageElement.className = 'page w-full h-full flex flex-col items-center justify-center text-center p-8';
+            
+            const textContainer = document.createElement('div');
+            textContainer.className = 'flex items-center gap-4 mb-8';
+
+            const textElement = document.createElement('p');
+            textElement.className = 'text-3xl md:text-4xl leading-relaxed';
+            textElement.innerHTML = pageData.text;
+
+            const ttsButton = document.createElement('button');
+            ttsButton.innerHTML = '🔊';
+            ttsButton.className = 'text-3xl bg-transparent border-none cursor-pointer transition-transform hover:scale-125';
+            ttsButton.onclick = () => readAloud(pageData.text, ttsButton);
+
+            textContainer.appendChild(textElement);
+            textContainer.appendChild(ttsButton);
+
+            const sceneElement = document.createElement('div');
+            sceneElement.className = 'flex-grow flex items-center justify-center flex-col';
+            sceneElement.innerHTML = pageData.scene();
+
+            if (index === story.length - 1) {
+                const generateButton = document.createElement('button');
+                generateButton.innerHTML = '✨ ぽんちゃんの新しいお話を作る';
+                generateButton.className = 'gemini-btn mt-8';
+                generateButton.onclick = () => generateNewStory(generateButton);
+                sceneElement.appendChild(generateButton);
+            }
+
+            pageElement.appendChild(textContainer);
+            pageElement.appendChild(sceneElement);
+            container.appendChild(pageElement);
+            
+            setTimeout(() => {
+                pageElement.classList.add('active');
+                if (pageData.interaction) {
+                    pageData.interaction();
+                }
+            }, 10);
+
+            updateNavButtons();
+        }
+
+        function updateNavButtons() {
+            const navDisabled = isApiBusy;
+            prevBtn.disabled = currentPageIndex === 0 || navDisabled;
+            nextBtn.disabled = currentPageIndex === story.length - 1 || navDisabled;
+            prevBtn.style.opacity = prevBtn.disabled ? '0.5' : '1';
+            nextBtn.style.opacity = nextBtn.disabled ? '0.5' : '1';
+            prevBtn.style.cursor = prevBtn.disabled ? 'not-allowed' : 'pointer';
+            nextBtn.style.cursor = nextBtn.disabled ? 'not-allowed' : 'pointer';
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPageIndex < story.length - 1) {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                currentPageIndex++;
+                renderPage(currentPageIndex);
+            }
         });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPageIndex > 0) {
+                currentPageIndex--;
+                renderPage(currentPageIndex);
+            }
+        });
+
+        window.onload = () => {
+            renderPage(currentPageIndex);
+        };
     </script>
 </body>
 </html>
-
